@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI 工具資源彙整</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <span class="bg-blue-600 text-white p-2 rounded-lg">AI</span>
+            工具資源彙整
+          </h1>
+          <p class="text-xs text-gray-500 mt-1">最新更新：2025/11/28</p>
+        </div>
+
+        <div class="relative w-full md:w-64">
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="搜尋工具..."
+            class="w-full pl-3 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          />
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div id="categoryContainer" class="flex gap-2 mt-6 overflow-x-auto pb-2">
+        <!-- 按鈕會由 JS 動態產生 -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+    <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- 卡片由 JS 動態產生 -->
+    </div>
+
+    <!-- 無結果訊息 -->
+    <div id="emptyState" class="hidden text-center py-20">
+      <div class="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+        <span class="text-3xl">🔍</span>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900">沒有找到相關工具</h3>
+      <p class="text-gray-500">請嘗試切換分類或使用不同的關鍵字搜尋。</p>
+      <button
+        id="clearFilterBtn"
+        class="mt-4 text-blue-600 hover:text-blue-800 font-medium"
+        type="button"
+      >
+        清除篩選條件
+      </button>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-gray-200 mt-auto">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="text-center text-gray-500 text-sm">
+        <p class="mb-2">AI 工具資源儀表板 &copy; <span id="year"></span></p>
+        <p>本頁面僅為連結彙整，工具版權歸原開發者所有。</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Simple JS -->
+  <script>
+    // ====== 資料定義 ======
+    const resources = [
+      {
+        title: "Scholar GPT",
+        description: "強大的學術研究助手，協助搜尋文獻、閱讀論文與生成引用。",
+        category: "學術研究",
+        icon: "🔎",
+        tagColor: "bg-blue-500",
+        links: [{ url: "https://chatgpt.com/g/g-kZ0eYXlJe-scholar-gpt", label: "Scholar GPT" }]
+      },
+      {
+        title: "Research Idea Explorer",
+        description: "探索研究靈感、發想主題與尋找研究方向的 AI 助手。",
+        category: "學術研究",
+        icon: "💡",
+        tagColor: "bg-blue-500",
+        links: [{ url: "https://chatgpt.com/g/g-hrBtDlA4X-research-idea-explorer", label: "探索靈感" }]
+      },
+      {
+        title: "Batch PDF Literature Review",
+        description: "批量處理 PDF 文獻回顧，協助快速找出研究缺口 (Research Gap)。",
+        category: "學術研究",
+        icon: "📚",
+        tagColor: "bg-blue-500",
+        links: [{ url: "https://chatgpt.com/g/g-PP3w4fBnw-batch-pdf-literature-review-find-research-gap", label: "開始文獻回顧" }]
+      },
+      {
+        title: "Literature Review",
+        description: "專門針對文獻回顧寫作與整理的 AI 工具。",
+        category: "學術研究",
+        icon: "📖",
+        tagColor: "bg-blue-500",
+        links: [{ url: "https://chatgpt.com/g/g-BCeU61TOF-literature-review", label: "開始回顧" }]
+      },
+      {
+        title: "英文論文小助手",
+        description: "專門協助英文論文寫作、修飾語句與檢查文法的 AI 助手。",
+        category: "寫作輔助",
+        icon: "✏️",
+        tagColor: "bg-purple-500",
+        links: [{ url: "https://chatgpt.com/g/g-HTxaV9wSi-ying-wen-lun-wen-xiao-zhu-shou", label: "開啟助手" }]
+      },
+      {
+        title: "Paper Review (吳恩達推薦)",
+        description: "由吳恩達 (Andrew Ng) 推薦的論文檢視工具，協助全面檢查與優化學術論文。",
+        category: "寫作輔助",
+        icon: "✅",
+        tagColor: "bg-purple-500",
+        links: [{ url: "https://paperreview.ai/", label: "前往檢視" }]
+      },
+      {
+        title: "Expert Grant Proposal Writer",
+        description: "專業的研究經費申請計畫書寫作助手，支援 Canvas 功能。",
+        category: "學術研究",
+        icon: "📄",
+        tagColor: "bg-blue-500",
+        links: [{ url: "https://chatgpt.com/g/g-yWFFgz4k6-expert-grant-proposal-writer-new-with-canvas", label: "撰寫計畫" }]
+      },
+      {
+        title: "Research Proposal Maker",
+        description: "協助構思與撰寫研究計畫書 (Proposal) 的工具。",
+        category: "學術研究",
+        icon: "🎓",
+        tagColor: "bg-blue-500",
+        links: [{ url: "https://chatgpt.com/share/68f7644c-94d4-8000-a888-2dd66fa38c4f", label: "建立研究計畫" }]
+      },
+      {
+        title: "Scholar AI",
+        description: "智能學術搜尋引擎，快速獲取準確的文獻與數據。",
+        category: "學術研究",
+        icon: "🔎",
+        tagColor: "bg-blue-500",
+        links: [{ url: "https://chatgpt.com/g/g-L2HknCZTC-scholar-ai", label: "Scholar AI" }]
+      },
+      {
+        title: "EBM 臨床問題生成器",
+        description: "協助將臨床情境轉化為結構化的 PICO 問題，利於實證醫學查詢。",
+        category: "醫療諮詢",
+        icon: "🩺",
+        tagColor: "bg-red-500",
+        links: [{ url: "https://chatgpt.com/g/g-682dfe7ef5548191a4a8220135cd86a3-ebm-lin-chuang-wen-ti-sheng-cheng-qi", label: "生成 PICO" }]
+      },
+      {
+        title: "台股趨勢專家",
+        description: "分析台灣股市趨勢，提供市場洞察與數據分析。",
+        category: "金融趨勢",
+        icon: "📈",
+        tagColor: "bg-green-500",
+        links: [{ url: "https://chatgpt.com/g/g-677cb143607c819191ddd0cd809597c9-tai-gu-qu-shi-zhuan-jia", label: "查看台股分析" }]
+      },
+      {
+        title: "醫療隨便問",
+        description: "提供一般性的醫療健康資訊諮詢與問答。",
+        category: "醫療諮詢",
+        icon: "🩺",
+        tagColor: "bg-red-500",
+        links: [{ url: "https://chatgpt.com/g/g-6764f196d0a88191a44d67abc9b362a4-yi-liao-sui-bian-wen", label: "開始諮詢" }]
+      },
+      {
+        title: "Review Article 寫作",
+        description: "免費的綜述文章 (Review Article) 寫作輔助工具。",
+        category: "寫作輔助",
+        icon: "📄",
+        tagColor: "bg-purple-500",
+        links: [{ url: "https://dify.x.chrisapp.xyz:8081/chat/bg9qSbksVertAUKu", label: "Dify 免費工具" }]
+      }
+    ];
+
+    // ====== 狀態 ======
+    let activeCategory = "All";
+    let searchTerm = "";
+
+    const cardsContainer = document.getElementById("cardsContainer");
+    const emptyState = document.getElementById("emptyState");
+    const searchInput = document.getElementById("searchInput");
+    const categoryContainer = document.getElementById("categoryContainer");
+    const clearFilterBtn = document.getElementById("clearFilterBtn");
+
+    // ====== 產生分類按鈕 ======
+    const categories = ["All", ...Array.from(new Set(resources.map(r => r.category)))];
+
+    function renderCategories() {
+      categoryContainer.innerHTML = "";
+      categories.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = cat === "All" ? "全部資源" : cat;
+        btn.className =
+          "whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all " +
+          (activeCategory === cat
+            ? "bg-gray-900 text-white shadow-md"
+            : "bg-gray-100 text-gray-600 hover:bg-gray-200");
+        btn.addEventListener("click", () => {
+          activeCategory = cat;
+          renderCategories();
+          renderCards();
+        });
+        categoryContainer.appendChild(btn);
+      });
+    }
+
+    // ====== 產生卡片 ======
+    function renderCards() {
+      const keyword = searchTerm.trim().toLowerCase();
+
+      const filtered = resources.filter(r => {
+        const matchSearch =
+          keyword === "" ||
+          r.title.toLowerCase().includes(keyword) ||
+          r.description.toLowerCase().includes(keyword);
+        const matchCat = activeCategory === "All" || r.category === activeCategory;
+        return matchSearch && matchCat;
+      });
+
+      cardsContainer.innerHTML = "";
+
+      if (filtered.length === 0) {
+        emptyState.classList.remove("hidden");
+        return;
+      } else {
+        emptyState.classList.add("hidden");
+      }
+
+      filtered.forEach(r => {
+        const card = document.createElement("article");
+        card.className =
+          "bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col h-full";
+
+        card.innerHTML = `
+          <div class="h-2 w-full ${r.tagColor}"></div>
+          <div class="p-6 flex-1 flex flex-col">
+            <div class="flex items-start justify-between mb-4">
+              <div class="p-3 rounded-lg bg-gray-50 text-gray-700 text-xl">
+                ${r.icon}
+              </div>
+              <span class="text-xs font-semibold px-2 py-1 rounded-full bg-gray-50">
+                ${r.category}
+              </span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">${r.title}</h3>
+            <p class="text-gray-600 text-sm mb-6 flex-1">${r.description}</p>
+            <div class="space-y-2 mt-auto">
+              ${r.links
+                .map(
+                  link => `
+                <a
+                  href="${link.url}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center justify-center w-full py-2.5 px-4 bg-gray-900 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+                >
+                  ${link.label || "前往使用"}
+                </a>`
+                )
+                .join("")}
+            </div>
+          </div>
+        `;
+
+        cardsContainer.appendChild(card);
+      });
+    }
+
+    // ====== 事件綁定 ======
+    searchInput.addEventListener("input", (e) => {
+      searchTerm = e.target.value;
+      renderCards();
+    });
+
+    clearFilterBtn.addEventListener("click", () => {
+      searchTerm = "";
+      activeCategory = "All";
+      searchInput.value = "";
+      renderCategories();
+      renderCards();
+    });
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // 初始渲染
+    renderCategories();
+    renderCards();
+  </script>
+</body>
+</html>
